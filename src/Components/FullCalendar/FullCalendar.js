@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClick
@@ -17,11 +17,30 @@ const Calendar = () => {
   const [dialogDate, setDialogDate] = useState("");
   const [date, setDate] = useState("");
   const [textAreaContent, setTextAreaContent] = useState("");
-
-  const events = [
+  const [events, setEvents] = useState([
     { title: "event 1", date: "2020-06-10" },
     { title: "event 2", date: "2019-04-02" },
-  ];
+  ]);
+
+  const getEvents = (data) => {
+    console.log("setEvents");
+    let events = [];
+    for (let prop in data) {
+      const obj = {
+        title: data[prop]["content"].substr(1, 20) + "...",
+        date: prop,
+      };
+      events.push(obj);
+    }
+    setEvents(events);
+  };
+
+  useEffect(() => {
+    axios
+      .get("/days.json")
+      .then((response) => getEvents(response.data))
+      .catch((error) => console.log(error));
+  }, []);
 
   const parseDate = (dateStr) => {
     return dateStr.split("00:00:00")[0];
@@ -43,7 +62,7 @@ const Calendar = () => {
   };
 
   const handleUpdate = () => {
-    let data = {};
+    let data = { date: date };
     data[date] = { content: textAreaContent };
     axios.patch("/days.json", data).catch((error) => console.log(error));
   };
