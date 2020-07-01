@@ -4,37 +4,20 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClick
 import "./DayGrid.css";
 
-import { parseDate, parseTitle } from "../../../utils/parseUtils";
+import { parseDate } from "../../../utils/parseUtils";
+import { getEvents, patchEvent } from "../../../utils/eventsUtils";
 
-import axios from "../../../axios-firebase";
-import { useDispatch, useSelector } from "react-redux";
-import { setEventsStore } from "../../../store/actions/actions";
+import { useSelector } from "react-redux";
 
 import RichTextEditor from "../../RichTextEditor/RichTextEditor";
 
 const DayGrid = ({ classes }) => {
-  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [dialogDate, setDialogDate] = useState("");
   const [date, setDate] = useState("");
   const [textAreaContent, setTextAreaContent] = useState();
 
   const events = useSelector((state) => state.events.events);
-
-  const getEvents = () => {
-    const updateStore = (data) => {
-      console.log(data);
-      let events = [];
-      for (let prop in data) {
-        events.push(data[prop]);
-      }
-      dispatch(setEventsStore(events));
-    };
-    axios
-      .get("/days.json")
-      .then((response) => updateStore(response.data))
-      .catch((error) => console.log("Error: " + JSON.stringify(error)));
-  };
 
   useEffect(() => {
     getEvents();
@@ -67,17 +50,7 @@ const DayGrid = ({ classes }) => {
   };
 
   const handleUpdate = (data) => {
-    console.log(data);
-    let obj = {};
-    obj[date] = {
-      title: parseTitle(data),
-      date: date,
-      content: data,
-    };
-    axios
-      .patch("/days.json", obj)
-      .then(() => getEvents())
-      .catch((error) => console.log(error));
+    patchEvent(data, date);
     handleClose();
   };
 

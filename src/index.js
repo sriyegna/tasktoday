@@ -3,19 +3,9 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import eventsReducer from "./store/reducers/events";
 
 import { Provider } from "react-redux";
-import { combineReducers, createStore } from "redux";
-
-const rootReducer = combineReducers({
-  events: eventsReducer,
-});
-
-const reduxStore = createStore(
-  rootReducer,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-);
+import { reduxStore, rootReducer } from "./store/store";
 
 ReactDOM.render(
   <Provider store={reduxStore}>
