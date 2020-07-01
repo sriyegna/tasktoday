@@ -6,3 +6,7 @@
 .fc-day-grid-event>.fc-content {
     white-space: normal !important;
 }
+
+#mui-rte-Save-button {
+    float: right;
+}

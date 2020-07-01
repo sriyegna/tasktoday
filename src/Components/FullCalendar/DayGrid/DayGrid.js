@@ -9,18 +9,32 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import TextareaAutosize from "@material-ui/core/TextareaAutosize";
+import Box from "@material-ui/core/Box";
+import CloseIcon from "@material-ui/icons/Close";
+import DeleteIcon from "@material-ui/icons/Delete";
+import SaveIcon from "@material-ui/icons/Save";
+import { withStyles } from "@material-ui/styles";
 
 import axios from "../../../axios-firebase";
+import MUIRichTextEditor from "mui-rte";
 import { useDispatch, useSelector } from "react-redux";
 import { setEventsStore } from "../../../store/actions/actions";
 
-const DayGrid = () => {
+const styles = {
+  dialogPaper: {
+    minHeight: "80vh",
+    maxHeight: "80vh",
+    minWidth: "80vw",
+    maxWidth: "80vw",
+  },
+};
+
+const DayGrid = ({ classes }) => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [dialogDate, setDialogDate] = useState("");
   const [date, setDate] = useState("");
-  const [textAreaContent, setTextAreaContent] = useState("");
+  const [textAreaContent, setTextAreaContent] = useState();
 
   const events = useSelector((state) => state.events.events);
 
@@ -29,19 +43,14 @@ const DayGrid = () => {
       console.log(data);
       let events = [];
       for (let prop in data) {
-        const obj = {
-          title: data[prop]["content"].substr(0, 60) + "...",
-          content: data[prop]["content"],
-          date: prop,
-        };
-        events.push(obj);
+        events.push(data[prop]);
       }
       dispatch(setEventsStore(events));
     };
     axios
       .get("/days.json")
       .then((response) => updateStore(response.data))
-      .catch((error) => console.log("text" + JSON.stringify(error)));
+      .catch((error) => console.log("Error: " + JSON.stringify(error)));
   };
 
   useEffect(() => {
@@ -78,15 +87,29 @@ const DayGrid = () => {
     setOpen(false);
   };
 
-  const handleTextUpdate = (e) => {
-    setTextAreaContent(e.target.value);
+  const getTitle = (data) => {
+    let retStr = "";
+    const objData = JSON.parse(data);
+    for (let i = 0; i < objData.blocks.length; i++) {
+      if (retStr < 20) {
+        retStr += objData.blocks[i].text;
+      } else {
+        break;
+      }
+    }
+    return retStr;
   };
 
-  const handleUpdate = () => {
-    let data = {};
-    data[date] = { content: textAreaContent };
+  const handleUpdate = (data) => {
+    console.log(data);
+    let obj = {};
+    obj[date] = {
+      title: getTitle(data),
+      date: date,
+      content: data,
+    };
     axios
-      .patch("/days.json", data)
+      .patch("/days.json", obj)
       .then(() => getEvents())
       .catch((error) => console.log(error));
     handleClose();
@@ -105,29 +128,68 @@ const DayGrid = () => {
         open={open}
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
-        fullWidth={true}
+        classes={{ paper: classes.dialogPaper }}
       >
         <DialogTitle id="form-dialog-title">{dialogDate}</DialogTitle>
         <DialogContent>
-          <TextareaAutosize
-            aria-label="empty textarea"
-            value={textAreaContent}
-            onChange={handleTextUpdate}
-            rowsMin={10}
-            style={{ width: "90%", padding: "4%" }}
+          <MUIRichTextEditor
+            label="Type something here..."
+            defaultValue={textAreaContent}
+            controls={[
+              "title",
+              "bold",
+              "italic",
+              "underline",
+              "strikethrough",
+              "highlight",
+              "undo",
+              "redo",
+              "link",
+              "media",
+              "numberList",
+              "bulletList",
+              "quote",
+              "code",
+              "clear",
+            ]}
+            inlineToolbar={true}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleUpdate} color="primary">
-            Subscribe
-          </Button>
+          <Box flexGrow={1}>
+            <Button
+              onClick={handleClose}
+              variant="contained"
+              color="secondary"
+              startIcon={<DeleteIcon />}
+            >
+              Delete
+            </Button>
+          </Box>
+          <Box>
+            <Button
+              onClick={handleClose}
+              variant="contained"
+              color="primary"
+              endIcon={<CloseIcon />}
+            >
+              Cancel
+            </Button>
+          </Box>
+          <Box>
+            <Button
+              onClick={handleUpdate}
+              variant="contained"
+              color="primary"
+              startIcon={<SaveIcon />}
+            >
+              Save
+            </Button>
+          </Box>
         </DialogActions>
       </Dialog>
     </>
   );
 };
 
-export default DayGrid;
+export default withStyles(styles)(DayGrid);
