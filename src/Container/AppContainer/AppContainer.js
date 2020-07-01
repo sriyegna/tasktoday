@@ -18,8 +18,8 @@ import ListItemText from "@material-ui/core/ListItemText";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 
-import DayGrid from "../../Components/FullCalendar/DayGrid/DayGrid";
-import ListGrid from "../../Components/FullCalendar/ListGrid/ListGrid";
+import DayGrid from "../../Components/FullCalendar/DayGrid";
+import ListGrid from "../../Components/FullCalendar/ListGrid";
 
 const drawerWidth = 240;
 
