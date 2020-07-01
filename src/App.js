@@ -1,14 +1,11 @@
 import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
-import Calendar from "./Components/FullCalendar/FullCalendar";
+import AppContainer from "./Container/AppContainer/AppContainer";
 
 const App = () => {
   return (
     <div className="App">
-      <div className="Calendar">
-        <Calendar />
-      </div>
+      <AppContainer />
     </div>
   );
 };

@@ -11,8 +11,3 @@
 .Calendar {
   color: white;
 }
-
-.fc-daygrid-event {
-  background-color: transparent !important;
-  border: none !important;
-}
