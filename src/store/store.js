@@ -5,7 +5,11 @@ export const rootReducer = combineReducers({
   events: eventsReducer,
 });
 
-export const reduxStore = createStore(
-  rootReducer,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-);
+export const reduxStore =
+  process.env.NODE_ENV === "production"
+    ? createStore(rootReducer)
+    : createStore(
+        rootReducer,
+        window.__REDUX_DEVTOOLS_EXTENSION__ &&
+          window.__REDUX_DEVTOOLS_EXTENSION__()
+      );
