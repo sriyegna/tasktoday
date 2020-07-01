@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClick
+import "./FullCalendar.css";
 
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -11,35 +12,40 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 
 import axios from "../../axios-firebase";
+import { useDispatch, useSelector } from "react-redux";
+import { setEventsStore } from "../../store/actions/actions";
 
 const Calendar = () => {
+  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [dialogDate, setDialogDate] = useState("");
   const [date, setDate] = useState("");
   const [textAreaContent, setTextAreaContent] = useState("");
-  const [events, setEvents] = useState([
-    { title: "event 1", date: "2020-06-10" },
-    { title: "event 2", date: "2019-04-02" },
-  ]);
 
-  const getEvents = (data) => {
-    console.log("setEvents");
-    let events = [];
-    for (let prop in data) {
-      const obj = {
-        title: data[prop]["content"].substr(1, 20) + "...",
-        date: prop,
-      };
-      events.push(obj);
-    }
-    setEvents(events);
+  const events = useSelector((state) => state.events.events);
+
+  const getEvents = () => {
+    const updateStore = (data) => {
+      console.log(data);
+      let events = [];
+      for (let prop in data) {
+        const obj = {
+          title: data[prop]["content"].substr(0, 60) + "...",
+          content: data[prop]["content"],
+          date: prop,
+        };
+        events.push(obj);
+      }
+      dispatch(setEventsStore(events));
+    };
+    axios
+      .get("/days.json")
+      .then((response) => updateStore(response.data))
+      .catch((error) => console.log("text" + JSON.stringify(error)));
   };
 
   useEffect(() => {
-    axios
-      .get("/days.json")
-      .then((response) => getEvents(response.data))
-      .catch((error) => console.log(error));
+    getEvents();
   }, []);
 
   const parseDate = (dateStr) => {
@@ -47,9 +53,14 @@ const Calendar = () => {
   };
 
   const handleDateClick = (arg) => {
-    setDate(arg.dateStr);
+    const date = arg.dateStr;
+    setDate(date);
     const parsedDate = parseDate(arg.date.toString());
     setDialogDate(parsedDate);
+    const selectedEvent = events.filter((e) => e.date === date);
+    selectedEvent.length > 0
+      ? setTextAreaContent(selectedEvent[0].content)
+      : setTextAreaContent("");
     setOpen(true);
   };
 
@@ -62,9 +73,13 @@ const Calendar = () => {
   };
 
   const handleUpdate = () => {
-    let data = { date: date };
+    let data = {};
     data[date] = { content: textAreaContent };
-    axios.patch("/days.json", data).catch((error) => console.log(error));
+    axios
+      .patch("/days.json", data)
+      .then(() => getEvents())
+      .catch((error) => console.log(error));
+    handleClose();
   };
 
   return (

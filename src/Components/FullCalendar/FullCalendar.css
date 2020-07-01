@@ -1,0 +1,8 @@
+.fc-daygrid-event {
+    background-color: transparent !important;
+    border: none !important;
+}
+
+.fc-day-grid-event>.fc-content {
+    white-space: normal !important;
+}
