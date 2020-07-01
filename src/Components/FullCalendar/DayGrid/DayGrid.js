@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClick
-import "./FullCalendar.css";
+import "./DayGrid.css";
 
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -11,11 +11,11 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 
-import axios from "../../axios-firebase";
+import axios from "../../../axios-firebase";
 import { useDispatch, useSelector } from "react-redux";
-import { setEventsStore } from "../../store/actions/actions";
+import { setEventsStore } from "../../../store/actions/actions";
 
-const Calendar = () => {
+const DayGrid = () => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [dialogDate, setDialogDate] = useState("");
@@ -119,4 +119,4 @@ const Calendar = () => {
   );
 };
 
-export default Calendar;
+export default DayGrid;

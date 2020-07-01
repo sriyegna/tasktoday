@@ -18,7 +18,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 
-import Calendar from "../../Components/FullCalendar/FullCalendar";
+import DayGrid from "../../Components/FullCalendar/DayGrid/DayGrid";
 
 const drawerWidth = 240;
 
@@ -170,7 +170,7 @@ export default function AppContainer() {
       </Drawer>
       <main className={classes.content}>
         <div className="Calendar">
-          <Calendar />
+          <DayGrid />
         </div>
       </main>
     </div>
