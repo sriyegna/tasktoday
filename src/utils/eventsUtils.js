@@ -18,7 +18,6 @@ export const getEvents = () => {
 };
 
 export const patchEvent = (data, date) => {
-  console.log(data);
   let obj = {};
   obj[date] = {
     title: parseTitle(data),
