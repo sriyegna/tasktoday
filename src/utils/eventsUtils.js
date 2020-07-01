@@ -5,7 +5,6 @@ import { parseTitle } from "./parseUtils";
 
 export const getEvents = () => {
   const updateStore = (data) => {
-    console.log(data);
     let events = [];
     for (let prop in data) {
       events.push(data[prop]);
@@ -19,6 +18,7 @@ export const getEvents = () => {
 };
 
 export const patchEvent = (data, date) => {
+  console.log(data);
   let obj = {};
   obj[date] = {
     title: parseTitle(data),

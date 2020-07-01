@@ -9,7 +9,7 @@ import { getEvents, patchEvent } from "../../../utils/eventsUtils";
 
 import { useSelector } from "react-redux";
 
-import RichTextEditor from "../../RichTextEditor/RichTextEditor";
+import RichTextDialog from "../../RichTextEditor/RichTextDialog";
 
 const DayGrid = ({ classes }) => {
   const [open, setOpen] = useState(false);
@@ -50,6 +50,7 @@ const DayGrid = ({ classes }) => {
   };
 
   const handleUpdate = (data) => {
+    console.log(data);
     patchEvent(data, date);
     handleClose();
   };
@@ -63,7 +64,7 @@ const DayGrid = ({ classes }) => {
         eventClick={handleEventClick}
         events={events}
       />
-      <RichTextEditor
+      <RichTextDialog
         open={open}
         dialogDate={dialogDate}
         textAreaContent={textAreaContent}

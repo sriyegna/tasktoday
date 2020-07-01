@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -22,8 +22,35 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const RichTextEditor = (props) => {
+const RichTextDialog = (props) => {
   const classes = useStyles();
+  const ref = useRef(null);
+  const controls = [
+    "title",
+    "bold",
+    "italic",
+    "underline",
+    "strikethrough",
+    "highlight",
+    "undo",
+    "redo",
+    "link",
+    "media",
+    "numberList",
+    "bulletList",
+    "quote",
+    "code",
+    "clear",
+  ];
+
+  const handleClick = () => {
+    ref.current.save();
+  };
+
+  const handleSave = (data) => {
+    props.handleUpdate(data);
+  };
+
   return (
     <Dialog
       open={props.open}
@@ -34,26 +61,12 @@ const RichTextEditor = (props) => {
       <DialogTitle id="form-dialog-title">{props.dialogDate}</DialogTitle>
       <DialogContent>
         <MUIRichTextEditor
+          ref={ref}
           label="Type something here..."
           defaultValue={props.textAreaContent}
-          controls={[
-            "title",
-            "bold",
-            "italic",
-            "underline",
-            "strikethrough",
-            "highlight",
-            "undo",
-            "redo",
-            "link",
-            "media",
-            "numberList",
-            "bulletList",
-            "quote",
-            "code",
-            "clear",
-          ]}
+          controls={controls}
           inlineToolbar={true}
+          onSave={handleSave}
         />
       </DialogContent>
       <DialogActions>
@@ -79,7 +92,8 @@ const RichTextEditor = (props) => {
         </Box>
         <Box>
           <Button
-            onClick={props.handleUpdate}
+            // onClick={props.handleUpdate}
+            onClick={handleClick}
             variant="contained"
             color="primary"
             startIcon={<SaveIcon />}
@@ -92,4 +106,4 @@ const RichTextEditor = (props) => {
   );
 };
 
-export default RichTextEditor;
+export default RichTextDialog;

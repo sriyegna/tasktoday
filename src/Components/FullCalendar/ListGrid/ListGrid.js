@@ -4,70 +4,39 @@ import listPlugin from "@fullcalendar/list";
 import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClick
 import "./ListGrid.css";
 
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import TextareaAutosize from "@material-ui/core/TextareaAutosize";
+import { parseDate } from "../../../utils/parseUtils";
+import { getEvents, patchEvent } from "../../../utils/eventsUtils";
 
-import axios from "../../../axios-firebase";
-import { useDispatch, useSelector } from "react-redux";
-import { setEventsStore } from "../../../store/actions/actions";
+import { useSelector } from "react-redux";
 
-const ListGrid = () => {
-  const dispatch = useDispatch();
+import RichTextDialog from "../../RichTextEditor/RichTextDialog";
+
+const DayGrid = ({ classes }) => {
   const [open, setOpen] = useState(false);
   const [dialogDate, setDialogDate] = useState("");
   const [date, setDate] = useState("");
-  const [textAreaContent, setTextAreaContent] = useState("");
+  const [textAreaContent, setTextAreaContent] = useState();
 
   const events = useSelector((state) => state.events.events);
-
-  const getEvents = () => {
-    const updateStore = (data) => {
-      console.log(data);
-      let events = [];
-      for (let prop in data) {
-        const obj = {
-          title: data[prop]["content"].substr(0, 60) + "...",
-          content: data[prop]["content"],
-          date: prop,
-        };
-        events.push(obj);
-      }
-      dispatch(setEventsStore(events));
-    };
-    axios
-      .get("/days.json")
-      .then((response) => updateStore(response.data))
-      .catch((error) => console.log("text" + JSON.stringify(error)));
-  };
 
   useEffect(() => {
     getEvents();
   }, []);
 
-  const parseDate = (dateStr) => {
-    return dateStr.split("00:00:00")[0];
-  };
-
   const handleDateClick = (arg) => {
     const date = arg.dateStr;
-    setDate(date);
     const parsedDate = parseDate(arg.date.toString());
-    setDialogDate(parsedDate);
-    const selectedEvent = events.filter((e) => e.date === date);
-    selectedEvent.length > 0
-      ? setTextAreaContent(selectedEvent[0].content)
-      : setTextAreaContent("");
-    setOpen(true);
+    handleClick(date, parsedDate);
   };
 
   const handleEventClick = (arg) => {
     const date = arg.event.startStr;
-    setDate(date);
     const parsedDate = parseDate(arg.event.start.toString());
+    handleClick(date, parsedDate);
+  };
+
+  const handleClick = (date, parsedDate) => {
+    setDate(date);
     setDialogDate(parsedDate);
     const selectedEvent = events.filter((e) => e.date === date);
     selectedEvent.length > 0
@@ -80,17 +49,9 @@ const ListGrid = () => {
     setOpen(false);
   };
 
-  const handleTextUpdate = (e) => {
-    setTextAreaContent(e.target.value);
-  };
-
-  const handleUpdate = () => {
-    let data = {};
-    data[date] = { content: textAreaContent };
-    axios
-      .patch("/days.json", data)
-      .then(() => getEvents())
-      .catch((error) => console.log(error));
+  const handleUpdate = (data) => {
+    console.log(data);
+    patchEvent(data, date);
     handleClose();
   };
 
@@ -103,33 +64,15 @@ const ListGrid = () => {
         eventClick={handleEventClick}
         events={events}
       />
-      <Dialog
+      <RichTextDialog
         open={open}
-        onClose={handleClose}
-        aria-labelledby="form-dialog-title"
-        fullWidth={true}
-      >
-        <DialogTitle id="form-dialog-title">{dialogDate}</DialogTitle>
-        <DialogContent>
-          <TextareaAutosize
-            aria-label="empty textarea"
-            value={textAreaContent}
-            onChange={handleTextUpdate}
-            rowsMin={10}
-            style={{ width: "90%", padding: "4%" }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleUpdate} color="primary">
-            Subscribe
-          </Button>
-        </DialogActions>
-      </Dialog>
+        dialogDate={dialogDate}
+        textAreaContent={textAreaContent}
+        handleClose={handleClose}
+        handleUpdate={handleUpdate}
+      />
     </>
   );
 };
 
-export default ListGrid;
+export default DayGrid;
