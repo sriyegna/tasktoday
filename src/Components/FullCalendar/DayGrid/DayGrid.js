@@ -4,30 +4,13 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClick
 import "./DayGrid.css";
 
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Box from "@material-ui/core/Box";
-import CloseIcon from "@material-ui/icons/Close";
-import DeleteIcon from "@material-ui/icons/Delete";
-import SaveIcon from "@material-ui/icons/Save";
-import { withStyles } from "@material-ui/styles";
+import { parseDate, parseTitle } from "../../../utils/parseUtils";
 
 import axios from "../../../axios-firebase";
-import MUIRichTextEditor from "mui-rte";
 import { useDispatch, useSelector } from "react-redux";
 import { setEventsStore } from "../../../store/actions/actions";
 
-const styles = {
-  dialogPaper: {
-    minHeight: "80vh",
-    maxHeight: "80vh",
-    minWidth: "80vw",
-    maxWidth: "80vw",
-  },
-};
+import RichTextEditor from "../../RichTextEditor/RichTextEditor";
 
 const DayGrid = ({ classes }) => {
   const dispatch = useDispatch();
@@ -57,10 +40,6 @@ const DayGrid = ({ classes }) => {
     getEvents();
   }, []);
 
-  const parseDate = (dateStr) => {
-    return dateStr.split("00:00:00")[0];
-  };
-
   const handleDateClick = (arg) => {
     const date = arg.dateStr;
     const parsedDate = parseDate(arg.date.toString());
@@ -87,24 +66,11 @@ const DayGrid = ({ classes }) => {
     setOpen(false);
   };
 
-  const getTitle = (data) => {
-    let retStr = "";
-    const objData = JSON.parse(data);
-    for (let i = 0; i < objData.blocks.length; i++) {
-      if (retStr < 20) {
-        retStr += objData.blocks[i].text;
-      } else {
-        break;
-      }
-    }
-    return retStr;
-  };
-
   const handleUpdate = (data) => {
     console.log(data);
     let obj = {};
     obj[date] = {
-      title: getTitle(data),
+      title: parseTitle(data),
       date: date,
       content: data,
     };
@@ -124,72 +90,15 @@ const DayGrid = ({ classes }) => {
         eventClick={handleEventClick}
         events={events}
       />
-      <Dialog
+      <RichTextEditor
         open={open}
-        onClose={handleClose}
-        aria-labelledby="form-dialog-title"
-        classes={{ paper: classes.dialogPaper }}
-      >
-        <DialogTitle id="form-dialog-title">{dialogDate}</DialogTitle>
-        <DialogContent>
-          <MUIRichTextEditor
-            label="Type something here..."
-            defaultValue={textAreaContent}
-            controls={[
-              "title",
-              "bold",
-              "italic",
-              "underline",
-              "strikethrough",
-              "highlight",
-              "undo",
-              "redo",
-              "link",
-              "media",
-              "numberList",
-              "bulletList",
-              "quote",
-              "code",
-              "clear",
-            ]}
-            inlineToolbar={true}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Box flexGrow={1}>
-            <Button
-              onClick={handleClose}
-              variant="contained"
-              color="secondary"
-              startIcon={<DeleteIcon />}
-            >
-              Delete
-            </Button>
-          </Box>
-          <Box>
-            <Button
-              onClick={handleClose}
-              variant="contained"
-              color="primary"
-              endIcon={<CloseIcon />}
-            >
-              Cancel
-            </Button>
-          </Box>
-          <Box>
-            <Button
-              onClick={handleUpdate}
-              variant="contained"
-              color="primary"
-              startIcon={<SaveIcon />}
-            >
-              Save
-            </Button>
-          </Box>
-        </DialogActions>
-      </Dialog>
+        dialogDate={dialogDate}
+        textAreaContent={textAreaContent}
+        handleClose={handleClose}
+        handleUpdate={handleUpdate}
+      />
     </>
   );
 };
 
-export default withStyles(styles)(DayGrid);
+export default DayGrid;
