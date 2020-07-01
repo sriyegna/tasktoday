@@ -20,6 +20,7 @@ import MailIcon from "@material-ui/icons/Mail";
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
 import ListIcon from "@material-ui/icons/List";
 
+import Routes from "../../Navigation/Routes";
 import DayGrid from "../../Components/FullCalendar/DayGrid";
 import ListGrid from "../../Components/FullCalendar/ListGrid";
 
@@ -185,15 +186,11 @@ const AppDrawer = (props) => {
         <main className={classes.content}>
           <div className="Calendar">
             <Switch>
-              <Route exact path="/">
-                <DayGrid />
-              </Route>
-              <Route exact path="/listgrid">
-                <ListGrid />
-              </Route>
-              <Route exact path="/calendargrid">
-                <DayGrid />
-              </Route>
+              {Routes.map((route, index) => (
+                <Route key={index} exact path={route.path}>
+                  {route.content}
+                </Route>
+              ))}
             </Switch>
           </div>
         </main>
