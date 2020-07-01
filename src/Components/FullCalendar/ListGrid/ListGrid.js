@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
+import listPlugin from "@fullcalendar/list";
 import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClick
-import "./DayGrid.css";
+import "./ListGrid.css";
 
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -15,7 +15,7 @@ import axios from "../../../axios-firebase";
 import { useDispatch, useSelector } from "react-redux";
 import { setEventsStore } from "../../../store/actions/actions";
 
-const DayGrid = () => {
+const ListGrid = () => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [dialogDate, setDialogDate] = useState("");
@@ -54,18 +54,20 @@ const DayGrid = () => {
 
   const handleDateClick = (arg) => {
     const date = arg.dateStr;
+    setDate(date);
     const parsedDate = parseDate(arg.date.toString());
-    handleClick(date, parsedDate);
+    setDialogDate(parsedDate);
+    const selectedEvent = events.filter((e) => e.date === date);
+    selectedEvent.length > 0
+      ? setTextAreaContent(selectedEvent[0].content)
+      : setTextAreaContent("");
+    setOpen(true);
   };
 
   const handleEventClick = (arg) => {
     const date = arg.event.startStr;
-    const parsedDate = parseDate(arg.event.start.toString());
-    handleClick(date, parsedDate);
-  };
-
-  const handleClick = (date, parsedDate) => {
     setDate(date);
+    const parsedDate = parseDate(arg.event.start.toString());
     setDialogDate(parsedDate);
     const selectedEvent = events.filter((e) => e.date === date);
     selectedEvent.length > 0
@@ -95,8 +97,8 @@ const DayGrid = () => {
   return (
     <>
       <FullCalendar
-        plugins={[dayGridPlugin, interactionPlugin]}
-        initialView="dayGridMonth"
+        plugins={[listPlugin, interactionPlugin]}
+        initialView="listMonth"
         dateClick={handleDateClick}
         eventClick={handleEventClick}
         events={events}
@@ -130,4 +132,4 @@ const DayGrid = () => {
   );
 };
 
-export default DayGrid;
+export default ListGrid;
