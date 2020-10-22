@@ -15,14 +15,12 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import MailIcon from "@material-ui/icons/Mail";
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
 import ListIcon from "@material-ui/icons/List";
 
 import Routes from "../../Navigation/Routes";
-import DayGrid from "../../Components/FullCalendar/DayGrid";
-import ListGrid from "../../Components/FullCalendar/ListGrid";
+// import DayGrid from "../../Components/FullCalendar/DayGrid";
+// import ListGrid from "../../Components/FullCalendar/ListGrid";
 
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
@@ -88,6 +86,10 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     padding: theme.spacing(3),
   },
+  link: {
+    color: "black",
+    textDecoration: "none",
+  },
 }));
 
 const AppDrawer = (props) => {
@@ -126,7 +128,7 @@ const AppDrawer = (props) => {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap>
-              Mini variant drawer
+              Tasks Today
             </Typography>
           </Toolbar>
         </AppBar>
@@ -154,7 +156,7 @@ const AppDrawer = (props) => {
           </div>
           <Divider />
           <List>
-            <Link to="/listgrid">
+            <Link to="/listgrid" className={classes.link}>
               <ListItem button key="listView">
                 <ListItemIcon>
                   <ListIcon />
@@ -162,7 +164,7 @@ const AppDrawer = (props) => {
                 <ListItemText primary="List View" />
               </ListItem>
             </Link>
-            <Link to="/calendargrid">
+            <Link to="/calendargrid" className={classes.link}>
               <ListItem button key="calendarView">
                 <ListItemIcon>
                   <CalendarTodayIcon />
@@ -170,17 +172,6 @@ const AppDrawer = (props) => {
                 <ListItemText primary="Calendar View" />
               </ListItem>
             </Link>
-          </List>
-          <Divider />
-          <List>
-            {["All mail", "Trash", "Spam"].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
           </List>
         </Drawer>
         <main className={classes.content}>
